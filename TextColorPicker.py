@@ -26,7 +26,7 @@ def rgb(inputRgb):
 
 
 genePoolSize = 50
-repeatSize = 8
+repeatSize = 25
 
 # Creates random gene pool of 15
 geneticAlgorithm.generateGenePool(genePoolSize, weightFilePaths=ga.GeneticAlgorithm.getFileListFromDirectory(geneticAlgorithm.weightPath), biasFilePaths=ga.GeneticAlgorithm.getFileListFromDirectory(geneticAlgorithm.biasPath))

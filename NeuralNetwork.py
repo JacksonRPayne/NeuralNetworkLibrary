@@ -18,7 +18,7 @@ print(hiddenLayer)
 
 class NeuralNetwork:
     
-    def __init__(self, layers, weightImportFile=None, biasImportFile=None, weightCoefficient=2, weightConstant=-1, biasCoefficient=2, biasConstant=-1):
+    def __init__(self, layers, weightImportFile=None, biasImportFile=None, weightCoefficient=2, weightConstant=-1, biasCoefficient=2, biasConstant=-1, learningRate=0.1):
         # Defines the layers based on a matrix list passed
         self.layers = layers.copy()
         # The amount of weight matrices is equal to the amount of layers -1
@@ -31,7 +31,8 @@ class NeuralNetwork:
         # Used to randomize biases
         self.biasCoefficient = biasCoefficient
         self.biasConstant = biasConstant
-        
+        # Initializes learning rate (defaults to 0.1)
+        self.learningRate = learningRate
         # Initializes weight and bias matrices lists
         for i in range(len(self.weightMatrices)):
             # Initializes a weight matrix with the rows equal to the number of nodes in this layer 
@@ -80,10 +81,48 @@ class NeuralNetwork:
         return self.layers[len(self.layers)-1]
             
     
+    def trainStochastically(self, inputs, correctOutputs):
+        # Sets the input layer
+        self.layers[0] = inputs
+        # Feeds forward the network
+        outputs = self.feedForward()
+        # If the parameter isn't the same size as the output layer
+        if(correctOutputs.size != outputs.size):
+            # Send error and return out of function
+            print("Wrong dimensioned outputs in trainStochastically function")
+            return
+        # Gets the error of the output layer
+        outputError = correctOutputs - outputs
+        # A list that stores the error values going backwards (first the output error, then hidden 1, etc.)
+        errors = [outputError]
+        # Loops through the hidden layers
+        for i in range(len(self.layers)-2):
+            # Adds the error of each hidden layer, working backwards by multiplying
+            # the transpose of the weight matrix by the error in the forward layer
+            errors.append(np.dot(self.weightMatrices[len(self.weightMatrices)-(i+1)].T, errors[i]))
+        
+        for j in range(len(self.weightMatrices)):
+            # Gets the gradient of a weight matrix in relation to the error of the forward layer
+            gradient = self.learningRate * (NeuralNetwork.dSigmoid(self.layers[len(self.layers)-(j+1)]) * errors[j])
+            # Updates the bias matrix according to the gradient
+            self.biasMatrices[len(self.biasMatrices)-(j+1)] = self.biasMatrices[len(self.biasMatrices)-(j+1)] + gradient
+            # Gets the delta of the weight matrix by multiplying the gradient with the transpose of the previous layer
+            delta = np.dot(gradient, self.layers[len(self.layers)-(j+2)].T)
+            # Updates the weights according to the delta
+            self.weightMatrices[len(self.weightMatrices)-(j+1)] = self.weightMatrices[len(self.weightMatrices)-(j+1)]+delta
+         
+        # Returns the error of the output layer 
+        return outputError
+    
     # Returns sigmoid of x
     @staticmethod
     def sigmoid(x):
         return 1/(1+np.exp(-x))
+    
+    # Returns "derivative" of sigmoid of x
+    @staticmethod
+    def dSigmoid(x):
+        return x*(1-x)
     
     def saveMatrixList(self, fileName, matrixList):
         # Creates a copy of the matrix list to avoid altering it

@@ -65,8 +65,8 @@ class GeneticAlgorithm:
         newPool = []
         # Loop through every instance in the gene pool
         for i in self.genePool:
-            # Repeat based off percent calculation
-            for j in range(self.getScoreAsPercent(i.score)):
+            # Repeat based off score
+            for j in range(math.floor(i.score)):
                 # Add index of instance to the list (using index over object to be more efficient)
                 weightedGenePool.append(i.index)
                 

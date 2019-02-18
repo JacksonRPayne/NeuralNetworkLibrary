@@ -21,11 +21,21 @@ answers = [np.zeros((1,1)),np.ones((1,1)),np.zeros((1,1)),np.ones((1,1))]
 for i in data:
   i.shape = (2,1)
   
-
+'''
 for x in range(100000):
     index = random.randint(0,3)
     dataPoint = data[index]
     network.trainStochastically(dataPoint, answers[index])
+
+'''
+for x in range(100000):
+    
+    for i in range(len(data)):
+        dataPoint = data[i]
+        network.computeGradientsAndDeltas(dataPoint, answers[i])
+    
+    if(x%5==0):
+        network.updateWeightsAndBiases()
 
 
 for q in range(len(data)):

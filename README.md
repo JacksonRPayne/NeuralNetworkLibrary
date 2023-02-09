@@ -1,5 +1,5 @@
 # NeuralNetworkLibrary
-A library of neural net tools I created in python along with a project demonstrating the use of it
+A library of neural net tools I created in python and numpy along with a project demonstrating the use of it
 
 # Features
 The neuralnetwork.py file provides 
